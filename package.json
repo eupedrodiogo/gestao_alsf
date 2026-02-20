@@ -1,0 +1,30 @@
+{
+  "name": "copy-of-lar-de-são-francisco",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "emulador": "npx firebase-tools emulators:start",
+    "exportar-missao": "node --experimental-vm-modules scripts/exportar-missao.js",
+    "importar-para-emulador": "node --experimental-vm-modules scripts/importar-para-emulador.js",
+    "sincronizar-pos-missao": "node --experimental-vm-modules scripts/sincronizar-pos-missao.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "firebase": "^12.9.0",
+    "firebase-admin": "^13.0.0",
+    "lucide-react": "^0.563.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "firebase-tools": "^15.5.1",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to get the user's role from their profile document
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuth() && getUserRole() == 'admin';
+    }
+
+    function hasRole(role) {
+      return isAuth() && getUserRole() == role;
+    }
+    
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    // --- Users Collection ---
+    // Only admins can list users.
+    // Users can read/write their own profile.
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    // --- Modules Data Security ---
+
+    // 1. Dia da Ação (Reception, Triage, Consultation, Pharmacy)
+    match /attendances/{attendanceId} {
+      allow read, write: if isAuth(); 
+    }
+
+    // 2. Volunteers
+    match /volunteers/{volunteerId} {
+      allow read, write: if isAuth();
+    }
+
+    // 3. Events/Promotion
+    match /events/{eventId} {
+      allow read, write: if isAuth();
+    }
+
+    // 4. Beneficiaries (Cadastro)
+    match /beneficiaries/{beneficiaryId} {
+      allow read, write: if isAuth();
+    }
+
+    // 5. Inventory (Estoque)
+    match /items/{itemId} {
+      allow read, write: if isAuth();
+    }
+
+    // NEW: Clinical Workflow (Recepção -> Triagem -> Médico -> Farmácia)
+    match /patient_visits/{visitId} {
+      allow read, write: if isAuth();
+    }
+
+    // NEW: Missions Planning
+    match /missions/{missionId} {
+      allow read, write: if isAuth();
+    }
+
+    // 6. Financial (Financeiro)
+    match /transactions/{transactionId} {
+      allow read, write: if isAuth();
+    }
+
+    // 7. Approvals (Aprovações)
+    match /approvals/{approvalId} {
+      allow read, write: if isAuth();
+    }
+
+    // 8. Fundraising (Arrecadação)
+    match /donations/{donationId} {
+      allow read, write: if isAuth();
+    }
+
+    // 9. PDV (Ponto de Venda)
+    match /sales/{saleId} {
+      allow read, write: if isAuth();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
