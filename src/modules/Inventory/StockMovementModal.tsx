@@ -1,9 +1,9 @@
 import React, { useState, ChangeEvent } from 'react';
-import { db, storage } from './firebase';
+import { db, storage } from '../../api/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import { Upload, X, FileText, CheckCircle, AlertTriangle, PlusCircle, Package } from 'lucide-react';
-import { Item, Category } from './types';
+import { Item, Category } from '../../types/index';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface StockMovementModalProps {

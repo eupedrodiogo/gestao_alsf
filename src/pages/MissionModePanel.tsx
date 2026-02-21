@@ -39,7 +39,7 @@ import {
     saveOfflineModeConfig,
     DEFAULT_CONFIG,
     type OfflineModeConfig,
-} from './offlineMode';
+} from '../hooks/offlineMode';
 
 interface Props {
     onClose: () => void;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Transaction, Mission } from './types';
+import { Transaction, Mission } from '../../types/index';
 import { X, Save, DollarSign, Calendar, Tag, CreditCard, User, AlignLeft, Receipt, Upload, FileText, Link, Briefcase } from 'lucide-react';
 
 interface FinancialModalProps {

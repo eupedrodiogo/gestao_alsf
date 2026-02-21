@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Pill, Briefcase, Search, Plus, Minus, Trash2, CheckCircle, Clock, X } from 'lucide-react';
-import { Item, Mission, PatientVisit, Volunteer } from '../../types';
+import { Pill, Briefcase, Search, Plus, Minus, Trash2, CheckCircle, Clock, X, FileText } from 'lucide-react';
+import { Item, Mission, PatientVisit, Volunteer } from '../../types/index';
 
 interface PharmacyModuleProps {
     items: Item[];
@@ -239,12 +239,12 @@ export const PharmacyModule = ({
                             {queue.map(visit => (
                                 <div key={visit.id} className="py-4 flex justify-between items-center group animate-in slide-in-from-left duration-300">
                                     <div className="text-left">
-                                        <p className="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{visit.patientName}</p>
+                                        <p className="font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{visit.beneficiaryName}</p>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-50 text-slate-500 border border-slate-100">
-                                                Médico: {visit.consultation?.doctorId || 'N/A'}
+                                                Médico: {visit.doctor?.doctorName || 'N/A'}
                                             </span>
-                                            {visit.consultation?.prescription && (
+                                            {visit.doctor?.prescription && (
                                                 <span className="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100 font-bold flex items-center gap-1">
                                                     <Pill className="w-3 h-3" /> C/ Prescrição
                                                 </span>
@@ -278,7 +278,7 @@ export const PharmacyModule = ({
                             <div key={visit.id} className="py-4 animate-in fade-in duration-500">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="font-bold text-slate-700">{visit.patientName}</p>
+                                        <p className="font-bold text-slate-700">{visit.beneficiaryName}</p>
                                         <div className="flex items-center gap-2 mt-1">
                                             <span className="text-[10px] uppercase font-black tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Atendido</span>
                                             <span className="text-xs text-slate-400">{visit.pharmacy?.pharmacistName}</span>
@@ -312,7 +312,7 @@ export const PharmacyModule = ({
                                     <Pill className="w-6 h-6 text-emerald-200" />
                                     {editingVisit.status === 'completed' ? 'Recibo de Farmácia' : 'Dispensação de Medicamentos'}
                                 </h3>
-                                <p className="text-emerald-100 text-sm mt-1">Beneficiário: <strong className="text-white">{editingVisit.patientName}</strong></p>
+                                <p className="text-emerald-100 text-sm mt-1">Beneficiário: <strong className="text-white">{editingVisit.beneficiaryName}</strong></p>
                             </div>
                             <button onClick={() => setIsPharmacyModalOpen(false)} className="text-emerald-200 hover:text-white transition-colors bg-black/10 hover:bg-black/20 p-2 rounded-full backdrop-blur-sm">
                                 <X className="w-5 h-5" />
@@ -327,11 +327,11 @@ export const PharmacyModule = ({
                             <div className="flex-1">
                                 <h4 className="text-xs font-bold uppercase text-amber-800 tracking-wider mb-1">Prescrição Médica</h4>
                                 <div className="text-sm font-medium text-amber-900 whitespace-pre-wrap leading-relaxed max-h-24 overflow-y-auto p-2 bg-white/50 rounded-xl border border-amber-200/50 empty:hidden">
-                                    {editingVisit.consultation?.prescription || 'Nenhuma prescrição em texto encontrada.'}
+                                    {editingVisit.doctor?.prescription || 'Nenhuma prescrição em texto encontrada.'}
                                 </div>
-                                {(editingVisit.consultation?.selectedMedications || []).length > 0 && (
+                                {(editingVisit.doctor?.selectedMedications || []).length > 0 && (
                                     <div className="mt-2 flex flex-wrap gap-2">
-                                        {(editingVisit.consultation?.selectedMedications || []).map((medId, idx) => {
+                                        {(editingVisit.doctor?.selectedMedications || []).map((medId, idx) => {
                                             const item = items?.find(i => i.id === medId);
                                             return item ? (
                                                 <span key={idx} className="bg-white border border-amber-200 text-amber-800 text-[11px] font-bold px-2 py-1 rounded shadow-sm">

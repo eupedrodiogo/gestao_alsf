@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from './firebase';
+import { auth, db } from '../api/firebase';
 
 const SetupAdmin: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -143,8 +143,8 @@ const SetupAdmin: React.FC = () => {
                         type="button"
                         onClick={() => { setMode('create'); setError(null); }}
                         className={`flex-1 py-2 rounded-lg font-medium transition-colors ${mode === 'create'
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}
                     >
                         ✨ Criar Novo
@@ -153,8 +153,8 @@ const SetupAdmin: React.FC = () => {
                         type="button"
                         onClick={() => { setMode('promote'); setError(null); }}
                         className={`flex-1 py-2 rounded-lg font-medium transition-colors ${mode === 'promote'
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                             }`}
                     >
                         ⬆️ Promover Existente

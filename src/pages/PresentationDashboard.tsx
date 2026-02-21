@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { PresentationSlides } from './PresentationSlides';
-import { useFirestore } from './useFirestore';
-import { Item, Mission, Beneficiary, Attendance } from './types';
+import { useFirestore } from '../api/useFirestore';
+import { Item, Mission, Beneficiary, Attendance } from '../types/index';
 import {
     LayoutDashboard,
     Database,

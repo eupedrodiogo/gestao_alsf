@@ -1,4 +1,4 @@
-import { Item, Beneficiary, Mission, Attendance, Transaction } from '../types';
+import { Item, Beneficiary, Mission, Attendance, Transaction } from '../types/index';
 
 export const INITIAL_ITEMS: Item[] = [
     // Farmácia (Medicamentos)

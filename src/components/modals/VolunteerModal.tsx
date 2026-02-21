@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Volunteer } from './types';
+import { Volunteer } from '../../types/index';
 import { X, Save, User, Mail, Phone, Calendar, FileText, Briefcase, Stethoscope } from 'lucide-react';
 
 interface VolunteerModalProps {

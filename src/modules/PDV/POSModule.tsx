@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Plus, Minus, Search, Trash2, Tag, Gift, FileText, CheckCircle, Receipt, X, DollarSign, CreditCard, Banknote, History, Store, Heart, Package, Calendar as CalendarIcon, Clock, Printer } from 'lucide-react';
-import { Item, Category, Transaction } from '../../../types';
-import { formatCurrency } from '../../utils';
-import { INITIAL_ITEMS } from '../../mocks';
+import { Item, Category, Transaction } from '../../types/index';
+import { formatCurrency } from '../../utils/index';
+import { INITIAL_ITEMS } from '../../utils/mocks';
 
 interface POSModuleProps {
     items: Item[];

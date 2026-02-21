@@ -9,9 +9,9 @@ import {
     Sun, Moon, Menu, X, Sparkles, ArrowRight, FileText, Download,
     ShieldCheck, FileCheck, ShieldAlert
 } from 'lucide-react';
-import { useFirestore } from './useFirestore';
-import { useAuth } from './AuthContext';
-import type { Mission, Volunteer, Item } from './types';
+import { useFirestore } from '../api/useFirestore';
+import { useAuth } from '../context/AuthContext';
+import type { Mission, Volunteer, Item } from '../types/index';
 
 // ─── UNIDADES DA REDE ALSF (ESTÁTICO) ──────────────────────────────────────────
 const ALSF_UNITS = [

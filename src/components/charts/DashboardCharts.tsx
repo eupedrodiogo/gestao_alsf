@@ -3,7 +3,7 @@ import {
     MOCK_MONTHLY_STATS,
     MOCK_DEMAND_STATS,
     MOCK_PEOPLE_COST_STATS
-} from '../../mocks';
+} from '../../utils/mocks';
 
 export const SimpleBarChart = ({ data }: { data: typeof MOCK_MONTHLY_STATS }) => {
     const maxVal = Math.max(...data.map(d => Math.max(d.input, d.output))) * 1.1;
