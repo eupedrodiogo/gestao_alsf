@@ -23,6 +23,8 @@ export interface Mission {
     time?: string; // Horário no formato HH:MM
     description: string;
     status: 'planned' | 'completed' | 'cancelled';
+    approvalStatus?: 'pending' | 'approved' | 'rejected';
+    presidentObservation?: string;
     allocatedItems: AllocatedItem[];
     // New fields for comprehensive event management
     volunteerIds?: string[];
@@ -70,7 +72,7 @@ export interface NotificationLog {
     read: boolean;
 }
 
-export type UserRole = 'admin' | 'operador' | 'voluntario' | 'saude' | 'financeiro' | 'pdv' | 'arrecadacao';
+export type UserRole = 'admin' | 'operador' | 'voluntario' | 'saude' | 'financeiro' | 'pdv' | 'arrecadacao' | 'medico' | 'farmacia' | 'enfermeiro' | 'dentista' | 'fisioterapeuta' | 'psicologo' | 'recepcao' | 'triagem' | 'estoque' | 'presidente';
 
 export interface UserData {
     uid: string;
