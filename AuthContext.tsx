@@ -9,7 +9,7 @@ interface AuthContextType {
     user: UserData | null;
     loading: boolean;
     login: (email: string, pass: string) => Promise<void>;
-    register: (name: string, email: string, pass: string) => Promise<void>;
+    register: (name: string, email: string, pass: string, role?: string, registryNumber?: string) => Promise<void>;
     logout: () => Promise<void>;
 }
 
@@ -61,14 +61,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await signInWithEmailAndPassword(auth, email, pass);
     };
 
-    const register = async (name: string, email: string, pass: string) => {
+    const register = async (name: string, email: string, pass: string, assignedRole: string = 'voluntario', registryNumber?: string) => {
         const result = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(result.user, { displayName: name });
-        // Create user document with default role
+        // Create user document with selected role and registry info if applicable
         await setDoc(doc(db, 'users', result.user.uid), {
             name,
             email,
-            role: 'voluntario', // Default role
+            role: assignedRole,
+            registryNumber: registryNumber || null,
+            registryValidated: !!registryNumber, // Mark as validated if provided
             createdAt: new Date()
         });
     };

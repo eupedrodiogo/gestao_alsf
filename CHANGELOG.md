@@ -1,4 +1,4 @@
-# Changelog - Sistema de Gestão ALSF (Lar de São Francisco)
+# Changelog - Sistema de Gestão ALSF (Lar São Francisco na Providência de Deus)
 
 Todas as alterações notáveis, implementações de módulos e atualizações deste projeto estão documentadas neste arquivo. 
 O formato baseia-se em *Keep a Changelog*, focando na evolução da arquitetura e das funcionalidades entregues.

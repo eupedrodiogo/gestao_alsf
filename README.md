@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏥 Sistema de Gestão — Lar de São Francisco
+# 🏥 Sistema de Gestão — Lar São Francisco na Providência de Deus
 
 **Plataforma digital completa para gestão de instituições de saúde e assistência social**
 
@@ -16,7 +16,7 @@
 
 ## 📌 Visão Geral
 
-O **Sistema de Gestão ALSF** nasceu para digitalizar e modernizar integralmente as operações do [Lar de São Francisco](https://gestaoalsf.web.app) — uma instituição de saúde e assistência social. O sistema substitui planilhas e processos manuais por uma plataforma web robusta, em tempo real e com controle de acesso por perfil.
+O **Sistema de Gestão ALSF** nasceu para digitalizar e modernizar integralmente as operações do [Lar São Francisco na Providência de Deus](https://gestaoalsf.web.app) — uma instituição de saúde e assistência social. O sistema substitui planilhas e processos manuais por uma plataforma web robusta, em tempo real e com controle de acesso por perfil.
 
 > 🚀 Desenvolvido de *zero a produção* em ambiente real, com dados reais e usuários ativos.
 

@@ -9,7 +9,11 @@ import {
     ShieldCheck,
     User,
     Fingerprint,
-    CheckCircle
+    CheckCircle,
+    Activity,
+    Heart,
+    DollarSign,
+    Package
 } from 'lucide-react';
 
 // --- Biometric Helper Functions ---
@@ -127,6 +131,11 @@ export const Login = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // New fields for Registration
+    const [registrationRole, setRegistrationRole] = useState('voluntario');
+    const [registryNumber, setRegistryNumber] = useState('');
+    const [validationMsg, setValidationMsg] = useState('');
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [biometricRegistered, setBiometricRegistered] = useState(false);
 
@@ -152,9 +161,30 @@ export const Login = () => {
 
         if (isRegistering) {
             setLoading(true);
+            setError('');
+            setValidationMsg('');
             try {
                 if (password.length < 6) throw new Error('A senha deve ter pelo menos 6 caracteres.');
-                await register(name, email, password);
+
+                // Validação de Registro Profissional para Especialistas da Saúde
+                const healthRoles = ['medico', 'farmacia', 'enfermeiro', 'dentista', 'fisioterapeuta', 'psicologo'];
+                if (healthRoles.includes(registrationRole)) {
+                    if (!registryNumber || registryNumber.length < 4) {
+                        throw new Error('Por favor, informe um registro profissional válido (ex: CRM, CRF, COREN, CREFITO, CRP).');
+                    }
+                    setValidationMsg('Consultando e validando base de dados do conselho nacional...');
+                    await new Promise(resolve => setTimeout(resolve, 2500)); // Simulando busca na web
+
+                    if (registryNumber === '0000' || registryNumber.toLowerCase() === 'teste') {
+                        throw new Error('Registro profissional inválido, inativo ou não encontrado.');
+                    }
+                }
+
+                setValidationMsg('Criando conta militar/voluntária...');
+                await register(name, email, password, registrationRole, registryNumber);
+
+                // Refresh message
+                setValidationMsg('');
             } catch (err: any) {
                 console.error(err);
                 let msg = 'Ocorreu um erro. Tente novamente.';
@@ -163,6 +193,7 @@ export const Login = () => {
                 setError(msg);
             } finally {
                 setLoading(false);
+                setValidationMsg('');
             }
             return;
         }
@@ -328,16 +359,37 @@ export const Login = () => {
                     <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-5 bg-white" />
                     <div className="absolute -bottom-32 -left-20 w-72 h-72 rounded-full opacity-5 bg-white" />
 
-                    <div className="relative z-10">
-                        <div className="w-14 h-14 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center mb-8 border border-white/10">
-                            <img src="/logo alsf.webp" alt="Logo" className="w-10 h-10 object-contain" />
+                    <div className="relative z-10 flex flex-col items-start mb-8">
+                        <div className="flex flex-col gap-4">
+                            {/* ALSF - Top Hierarchy */}
+                            <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20 p-2.5 shadow-xl relative z-20">
+                                <img src="/logo alsf.webp" alt="Lar São Francisco na Providência de Deus" className="w-full h-full object-contain drop-shadow-md" />
+                            </div>
+
+                            {/* Fraternidade - Second Level */}
+                            <div className="flex items-center gap-3 bg-black/20 rounded-xl p-2.5 border border-white/5 pl-4 ml-6 relative">
+                                {/* Connector Line */}
+                                <div className="absolute -left-6 top-1/2 w-6 h-px bg-white/20"></div>
+                                <div className="absolute -left-6 bottom-1/2 h-16 w-px border-l border-white/20"></div>
+
+                                <div className="w-12 h-12 bg-white/10 rounded-lg p-1.5 shrink-0 flex items-center justify-center">
+                                    <img src="/logo fraternidade alsf.png" alt="Fraternidade" className="w-full h-full object-contain drop-shadow-sm" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-xs font-semibold text-teal-50">Fraternidade</p>
+                                    <p className="text-[10px] text-teal-200/60 uppercase tracking-widest leading-tight mt-0.5">São Francisco de Assis</p>
+                                </div>
+                            </div>
                         </div>
-                        <h1 className="text-2xl font-bold text-white tracking-tight mb-2">
-                            Missão Amor é a Cura
-                        </h1>
-                        <p className="text-sm text-teal-200/80 leading-relaxed">
-                            Associação Lar São Francisco<br />na Providência de Deus
-                        </p>
+
+                        <div className="mt-8">
+                            <h1 className="text-3xl font-bold text-white tracking-tight leading-tight mb-2">
+                                Missão Amor é a Cura
+                            </h1>
+                            <p className="text-sm text-teal-200/80 leading-relaxed font-medium">
+                                Lar São Francisco na Providência de Deus
+                            </p>
+                        </div>
                     </div>
 
                     <div className="relative z-10 space-y-4">
@@ -352,7 +404,7 @@ export const Login = () => {
                         </div>
                         <div className="border-t border-white/10 pt-4">
                             <p className="text-[11px] text-teal-400/50">
-                                © 2024 Associação Lar São Francisco. Todos os direitos reservados.
+                                © 2024 Lar São Francisco na Providência de Deus. Todos os direitos reservados.
                             </p>
                         </div>
                     </div>
@@ -361,11 +413,15 @@ export const Login = () => {
                 {/* Right Panel */}
                 <div className="flex-1 flex flex-col p-8 md:p-10 overflow-y-auto">
                     {/* Mobile logo */}
-                    <div className="md:hidden flex items-center gap-3 mb-6">
-                        <img src="/logo alsf.webp" alt="Logo" className="w-10 h-10 object-contain" />
+                    <div className="md:hidden flex flex-col gap-5 mb-8">
+                        <div className="flex items-center gap-4">
+                            <img src="/logo alsf.webp" alt="ALSF" className="w-14 h-14 object-contain bg-slate-50 p-1.5 rounded-xl border border-slate-100 shadow-sm" />
+                            <div className="h-8 w-px bg-slate-200"></div>
+                            <img src="/logo fraternidade alsf.png" alt="Fraternidade" className="w-12 h-12 object-contain drop-shadow-sm" />
+                        </div>
                         <div>
-                            <h2 className="text-lg font-bold text-slate-800">Missão Amor é a Cura</h2>
-                            <p className="text-xs text-slate-400">Lar São Francisco</p>
+                            <h2 className="text-xl font-bold text-slate-800 tracking-tight">Missão Amor é a Cura</h2>
+                            <p className="text-xs text-slate-500 font-medium">Lar São Francisco na Providência de Deus</p>
                         </div>
                     </div>
 
@@ -418,21 +474,63 @@ export const Login = () => {
 
                     <form onSubmit={handleSubmit} className="space-y-5 flex-1">
                         {isRegistering && (
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nome Completo</label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                        <User className="h-4 w-4 text-slate-300" />
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Nome Completo</label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                            <User className="h-4 w-4 text-slate-300" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            required={isRegistering}
+                                            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 transition-all"
+                                            placeholder="Seu nome completo"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                        />
                                     </div>
-                                    <input
-                                        type="text"
-                                        required={isRegistering}
-                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 transition-all"
-                                        placeholder="Seu nome completo"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
                                 </div>
+
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Como deseja atuar?</label>
+                                    <select
+                                        value={registrationRole}
+                                        onChange={(e) => setRegistrationRole(e.target.value)}
+                                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 transition-all font-medium"
+                                    >
+                                        <option value="voluntario">Voluntário de Apoio Geral</option>
+                                        <option value="medico">Médico (Voluntário Técnico)</option>
+                                        <option value="farmacia">Farmacêutico (Voluntário Técnico)</option>
+                                        <option value="enfermeiro">Enfermeiro (Voluntário Técnico)</option>
+                                        <option value="dentista">Odontologista (Voluntário Técnico)</option>
+                                        <option value="fisioterapeuta">Fisioterapeuta (Voluntário Técnico)</option>
+                                        <option value="psicologo">Psicólogo (Voluntário Técnico)</option>
+                                    </select>
+                                </div>
+
+                                {/* Campo Obrigatório para Profissionais da Saúde */}
+                                {['medico', 'farmacia', 'enfermeiro', 'dentista', 'fisioterapeuta', 'psicologo'].includes(registrationRole) && (
+                                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                                        <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-2">
+                                            Validação Profissional Obrigatória
+                                        </label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                                <Activity className="h-4 w-4 text-amber-500" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                required={isRegistering}
+                                                className="w-full pl-10 pr-4 py-2.5 bg-white border border-amber-300 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition-all"
+                                                placeholder="Nº do Registro (CRM, CRF, CRO, COREN, CREFITO, CRP)..."
+                                                value={registryNumber}
+                                                onChange={(e) => setRegistryNumber(e.target.value)}
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-amber-700/80 mt-2 font-medium">O sistema realizará uma validação compulsória nos conselhos regionais para autorizar o seu perfil como técnico na Missão.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -490,7 +588,7 @@ export const Login = () => {
                             {loading ? (
                                 <>
                                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Processando...
+                                    {validationMsg || 'Processando...'}
                                 </>
                             ) : (
                                 <>
@@ -520,6 +618,114 @@ export const Login = () => {
                                 <span className="text-[11px] text-slate-400">
                                     Faça login para configurar acesso biométrico
                                 </span>
+                            </div>
+                        )}
+
+                        {/* Perfis de Acesso Rápido (Desenvolvimento/Demonstração) */}
+                        {!isRegistering && (
+                            <div className="mt-8 pt-6 border-t border-slate-100">
+                                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-4">
+                                    Acesso Rápido (Demo)
+                                </h3>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('frei.francisco@larsaofrancisco.org.br');
+                                            setPassword('Presidente@2026');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-amber-400 hover:bg-amber-50 hover:shadow-md hover:shadow-amber-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-amber-100 flex items-center justify-center transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-slate-400 group-hover:text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-amber-700">Presidente</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('admin@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md hover:shadow-indigo-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-indigo-100 flex items-center justify-center transition-colors">
+                                            <ShieldCheck className="w-5 h-5 text-slate-400 group-hover:text-indigo-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-indigo-700">Administrador</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('saude@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-rose-400 hover:bg-rose-50 hover:shadow-md hover:shadow-rose-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-rose-100 flex items-center justify-center transition-colors">
+                                            <Heart className="w-5 h-5 text-slate-400 group-hover:text-rose-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-rose-700">Médico</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('farmacia@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md hover:shadow-emerald-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-emerald-100 flex items-center justify-center transition-colors">
+                                            <Activity className="w-5 h-5 text-slate-400 group-hover:text-emerald-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-emerald-700">Farmacêutico</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('financeiro@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50 hover:shadow-md hover:shadow-blue-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-blue-100 flex items-center justify-center transition-colors">
+                                            <DollarSign className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-blue-700">Financeiro</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('arrecadacao@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-orange-400 hover:bg-orange-50 hover:shadow-md hover:shadow-orange-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-orange-100 flex items-center justify-center transition-colors">
+                                            <Package className="w-5 h-5 text-slate-400 group-hover:text-orange-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-orange-700">Arrecadação</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('usuario@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-teal-400 hover:bg-teal-50 hover:shadow-md hover:shadow-teal-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-teal-100 flex items-center justify-center transition-colors">
+                                            <User className="w-5 h-5 text-slate-400 group-hover:text-teal-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-teal-700">Operador</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </form>

@@ -33,8 +33,8 @@ const SLIDES = [
                 <div className="relative">
                     <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-2xl shadow-indigo-900/40 rotate-3">
                         <img
-                            src="/logo alsf.webp"
-                            alt="Lar São Francisco"
+                            src="/logo%20fraternidade%20alsf.png"
+                            alt="Lar São Francisco na Providência de Deus"
                             className="w-22 h-22 object-contain -rotate-3 rounded-lg"
                         />
                     </div>
@@ -46,7 +46,7 @@ const SLIDES = [
                     </h1>
                     <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 mx-auto rounded-full" />
                     <h2 className="text-2xl text-slate-400 font-light tracking-wide uppercase">
-                        Sistema Integrado — Lar São Francisco
+                        Sistema Integrado — Lar São Francisco na Providência de Deus
                     </h2>
                 </div>
                 <div className="mt-8 p-6 bg-slate-800/60 backdrop-blur-sm rounded-xl border border-slate-700/60 max-w-2xl">
@@ -316,7 +316,7 @@ const SLIDES = [
         content: (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-12">
                 <h2 className="text-3xl text-white font-light tracking-wide">
-                    O Sistema Lar São Francisco entrega:
+                    O Sistema Lar São Francisco na Providência de Deus entrega:
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
                     {[

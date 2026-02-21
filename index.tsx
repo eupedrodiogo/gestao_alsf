@@ -1248,8 +1248,8 @@ const App = () => {
             </>
           ) : (
             <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-full flex flex-col items-center justify-center text-center">
-              <img src="/logo%20fraternidade%20alsf.png" alt="Logo Lar São Francisco" className="w-24 h-24 object-contain mb-6 drop-shadow-sm" />
-              <h3 className="text-lg font-bold text-slate-800">Bem-vindo ao Lar de São Francisco</h3>
+              <img src="/logo%20fraternidade%20alsf.png" alt="Logo Lar São Francisco na Providência de Deus" className="w-24 h-24 object-contain mb-6 drop-shadow-sm" />
+              <h3 className="text-lg font-bold text-slate-800">Bem-vindo ao Lar São Francisco na Providência de Deus</h3>
               <p className="text-slate-500 mt-2 max-w-md">
                 Obrigado por sua dedicação e serviço. Utilize o painel lateral para acessar suas tarefas e missões.
               </p>
@@ -4247,7 +4247,7 @@ const App = () => {
                            </head>
                            <body>
                              <div class="header">
-                               <strong>LAR DE SÃO FRANCISCO</strong><br/>
+                               <strong>LAR SÃO FRANCISCO NA PROVIDÊNCIA DE DEUS</strong><br/>
                                RECIBO DE VENDA PDV<br/>
                                ${new Date().toLocaleString()}
                              </div>
@@ -4323,8 +4323,7 @@ const App = () => {
               <img src="/logo alsf.webp" alt="ALSF" className="relative w-12 h-12 object-contain bg-white rounded-xl p-1.5 ring-1 ring-slate-700 shadow-xl" />
             </div>
             <div>
-              <h1 className="font-bold text-base text-white leading-tight tracking-tight">Lar São Francisco</h1>
-              <p className="text-[9px] text-slate-400 uppercase tracking-widest font-semibold mt-0.5">Na Providência de Deus</p>
+              <h1 className="font-bold text-base text-white leading-tight tracking-tight text-[11px]">Lar São Francisco na Providência de Deus</h1>
             </div>
           </div>
 
@@ -4689,7 +4688,7 @@ const App = () => {
                   {activeTab === 'volunteers' && 'Gestão de Voluntários'}
                   {activeTab === 'users' && 'Gestão de Usuários'}
                 </h1>
-                <p className="text-slate-500 text-xs md:text-sm mt-1 hidden sm:block">Sistema de gestão do Lar São Francisco</p>
+                <p className="text-slate-500 text-xs md:text-sm mt-1 hidden sm:block">Sistema de gestão do Lar São Francisco na Providência de Deus</p>
               </div>
             </div>
           </div>
