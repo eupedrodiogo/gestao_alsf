@@ -96,6 +96,7 @@ import { formatCurrency, formatCompactNumber, exportToCSV } from './src/utils';
 import { SimpleBarChart, DemandBarChart, PeopleCostChart } from './src/components/charts/DashboardCharts';
 import { ToastContainer, Toast, ToastType } from './src/components/ui/Toast';
 import { POSModule } from './src/modules/PDV/POSModule';
+import { PharmacyModule } from './src/modules/Pharmacy/PharmacyModule';
 
 
 
@@ -248,8 +249,6 @@ const App = () => {
   const [editingVisit, setEditingVisit] = useState<PatientVisit | null>(null);
   const [triageForm, setTriageForm] = useState({ weight: '', bloodPressure: '', temperature: '', symptoms: '', notes: '', nurseName: '' });
   const [consultationForm, setConsultationForm] = useState<{ diagnosis: string; prescription: string; internalNotes: string; selectedMedications: string[] }>({ diagnosis: '', prescription: '', internalNotes: '', selectedMedications: [] });
-  const [isPharmacyModalOpen, setIsPharmacyModalOpen] = useState(false);
-  const [pharmacyForm, setPharmacyForm] = useState<{ dispensedItems: { itemId: string; name: string; quantity: number }[], notes: string }>({ dispensedItems: [], notes: '' });
 
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [editingMission, setEditingMission] = useState<Mission | null>(null);
@@ -1713,40 +1712,6 @@ const App = () => {
     }
   };
 
-  const handleSavePharmacy = async () => {
-    if (!editingVisit || !pharmacyForm) return;
-
-    try {
-      // 1. Update Inventory (decrement stock)
-      for (const dispensed of pharmacyForm.dispensedItems) {
-        const originalItem = items?.find(i => i.id === dispensed.itemId);
-        if (originalItem) {
-          await updateItemFirestore(originalItem.id, {
-            quantity: originalItem.quantity - dispensed.quantity
-          });
-          // Log stock movement could be added here
-        }
-      }
-
-      // 2. Update Visit
-      await updatePatientVisitFirestore(editingVisit.id, {
-        pharmacy: {
-          ...pharmacyForm,
-          pharmacistName: user?.name || 'Farmacêutico',
-        },
-        status: 'completed',
-        // completionTime: new Date()
-      });
-
-      setIsPharmacyModalOpen(false);
-      setEditingVisit(null);
-      setPharmacyForm({ dispensedItems: [], notes: '' });
-      showToast('Sucesso', 'success', 'Dispensação realizada e estoque atualizado!');
-    } catch (error) {
-      console.error("Error saving pharmacy:", error);
-      showToast("Erro ao finalizar farmácia", "error");
-    }
-  };
 
   const renderReception = () => {
     const today = new Date().toISOString().split('T')[0];
@@ -2463,289 +2428,21 @@ const App = () => {
   };
 
   const renderPharmacy = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const queue = (patientVisits || []).filter(v => v.date && v.date.startsWith(today) && v.status === 'pharmacy');
-    const completed = (patientVisits || []).filter(v => v.date && v.date.startsWith(today) && v.status === 'completed');
-
-    const handleStartPharmacy = (visit: PatientVisit) => {
-      setEditingVisit(visit);
-      setPharmacyForm({ dispensedItems: [], notes: '' });
-      setIsPharmacyModalOpen(true);
-    };
-
-    // --- Mission Stock Panel Logic (same as renderConsultation) ---
-    const allVolunteers = volunteers || [];
-    const allMissions = missions && missions.length > 0 ? missions : INITIAL_MISSIONS;
-    const allItems = items && items.length > 0 ? items : INITIAL_ITEMS;
-
-    const myVolunteer = allVolunteers.find(
-      v => v.email?.toLowerCase() === user?.email?.toLowerCase() ||
-        v.name?.toLowerCase() === user?.email?.toLowerCase().split('@')[0]
-    );
-
-    const myMissions = allMissions.filter(m =>
-      m.status !== 'cancelled' &&
-      myVolunteer && (m.volunteerIds || []).includes(myVolunteer.id)
-    );
-
-    const upcomingMissions = myMissions.length > 0
-      ? myMissions
-      : allMissions.filter(m => m.status === 'planned').sort((a, b) => a.date.localeCompare(b.date)).slice(0, 1);
-
-    type MissionMedItem = { itemName: string; unit: string; quantity: number; missionTitle: string; missionDate: string; stockQuantity: number };
-    const missionMedItems: MissionMedItem[] = [];
-    upcomingMissions.forEach(mission => {
-      (mission.allocatedItems || []).forEach(alloc => {
-        const item = allItems.find(i => i.id === alloc.itemId);
-        if (item && item.category === 'Medicamentos') {
-          missionMedItems.push({
-            itemName: item.name,
-            unit: item.unit,
-            quantity: alloc.quantity,
-            missionTitle: mission.title,
-            missionDate: mission.date,
-            stockQuantity: item.quantity,
-          });
-        }
-      });
-    });
-
     return (
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-              <Pill className="w-6 h-6 text-emerald-600" />
-              Farmácia
-            </h2>
-            <p className="text-sm text-slate-500 mt-1">Dispense medicamentos conforme prescrição médica</p>
-          </div>
-          <div className="flex gap-3">
-            {queue.length > 0 && (
-              <button
-                onClick={() => handleStartPharmacy(queue[0])}
-                className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white text-sm font-bold rounded-xl hover:from-emerald-700 hover:to-emerald-800 shadow-lg shadow-emerald-200 transition-all flex items-center gap-2 animate-pulse"
-              >
-                <Pill className="w-4 h-4" />
-                Chamar Próximo Paciente
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* === MISSION STOCK PANEL === */}
-        <div className="bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-100 rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-5 py-4 border-b border-teal-100 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
-                <Pill className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold text-teal-900 text-sm">Farmácia da Missão</h3>
-                <p className="text-[11px] text-teal-600">
-                  {upcomingMissions.length > 0
-                    ? `Medicamentos disponíveis para dispensação${myMissions.length === 0 ? ' (próxima missão planejada)' : ''}`
-                    : 'Nenhuma missão ativa encontrada'}
-                </p>
-              </div>
-            </div>
-            {upcomingMissions.length > 0 && (
-              <div className="text-right">
-                <span className="text-[10px] font-bold text-teal-700 bg-teal-100 px-2 py-1 rounded-full flex items-center gap-1">
-                  <Briefcase className="w-3 h-3" />
-                  {upcomingMissions[0]?.title}
-                </span>
-                <p className="text-[10px] text-teal-500 mt-0.5">
-                  {upcomingMissions[0] && new Date(upcomingMissions[0].date + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {missionMedItems.length === 0 ? (
-            <div className="p-8 text-center text-teal-400">
-              <Pill className="w-10 h-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm font-medium">Nenhum medicamento alocado à missão.</p>
-              <p className="text-xs mt-1 opacity-70">Solicite ao coordenador que aloque medicamentos a esta missão.</p>
-            </div>
-          ) : (
-            <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {missionMedItems.map((med, idx) => {
-                const stockRatio = med.stockQuantity > 0 ? Math.min(med.quantity / med.stockQuantity, 1) : 0;
-                const stockStatus = med.stockQuantity === 0
-                  ? { color: 'red', label: 'Sem estoque', bg: 'bg-red-50 border-red-200' }
-                  : med.stockQuantity < med.quantity
-                    ? { color: 'amber', label: 'Estoque limitado', bg: 'bg-amber-50 border-amber-200' }
-                    : { color: 'emerald', label: 'Disponível', bg: 'bg-white border-teal-100' };
-
-                return (
-                  <div key={idx} className={`rounded-xl border p-3 flex flex-col gap-2 shadow-sm hover:shadow-md transition-shadow ${stockStatus.bg}`}>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <p className="font-bold text-slate-800 text-sm leading-tight">{med.itemName}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          Alocado para missão: <span className="font-semibold text-teal-700">{med.quantity} {med.unit}</span>
-                        </p>
-                      </div>
-                      <span className={`shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide
-                        ${stockStatus.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                          stockStatus.color === 'amber' ? 'bg-amber-100 text-amber-700' :
-                            'bg-red-100 text-red-700'}`}>
-                        {stockStatus.label}
-                      </span>
-                    </div>
-
-                    {/* Stock bar */}
-                    <div>
-                      <div className="flex justify-between text-[10px] text-slate-500 mb-1">
-                        <span>Estoque geral</span>
-                        <span className="font-semibold text-slate-700">{med.stockQuantity} {med.unit}</span>
-                      </div>
-                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all ${stockStatus.color === 'emerald' ? 'bg-emerald-400' :
-                            stockStatus.color === 'amber' ? 'bg-amber-400' : 'bg-red-400'
-                            }`}
-                          style={{ width: `${Math.min(stockRatio * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    <p className="text-[10px] text-slate-400 italic border-t border-slate-100 pt-1.5">
-                      Dispensar da missão <strong className="text-slate-600">{med.missionTitle}</strong>.
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-        {/* === END MISSION STOCK PANEL === */}
-
-        {/* KPI Cards */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-xl p-4 border border-emerald-100 shadow-sm">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-4 h-4 text-emerald-600" />
-              </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase">Aguardando Medicação</span>
-            </div>
-            <p className="text-2xl font-black text-emerald-600">{queue.length}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-                <Check className="w-4 h-4 text-slate-600" />
-              </div>
-              <span className="text-xs font-semibold text-slate-500 uppercase">Dispensados Hoje</span>
-            </div>
-            <p className="text-2xl font-black text-slate-700">{completed.length}</p>
-          </div>
-        </div>
-
-        {/* Pharmacy Queue */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-          <div className="p-4 border-b border-slate-100 bg-emerald-50 flex justify-between items-center">
-            <h3 className="font-bold text-emerald-900 flex items-center gap-2">
-              <Pill className="w-5 h-5" />
-              Fila da Farmácia ({queue.length})
-            </h3>
-            <span className="text-xs text-emerald-600">Protocolo: Recepção → Triagem → Médico → <strong>Farmácia</strong></span>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {queue.length === 0 ? (
-              <div className="p-12 text-center text-slate-400">
-                <Pill className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p className="font-medium">Nenhum paciente aguardando medicamentos.</p>
-                <p className="text-xs mt-2">Pacientes aparecerão aqui após a consulta médica</p>
-              </div>
-            ) : (
-              queue.map((v, idx) => (
-                <div key={v.id} className={`p-4 hover:bg-emerald-50/30 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${idx === 0 ? 'bg-emerald-50/20 border-l-4 border-emerald-400' : ''}`}>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {idx === 0 && <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold uppercase animate-pulse">PRÓXIMO</span>}
-                      <p className="font-bold text-slate-800 text-lg">{v.beneficiaryName}</p>
-                      {v.priority && v.priority !== 'normal' && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${v.priority === 'emergencia' ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700'
-                          }`}>{v.priority}</span>
-                      )}
-                    </div>
-                    <div className="mt-2 space-y-2">
-                      {/* Medicamentos selecionados pelo médico */}
-                      {v.doctor?.selectedMedications && v.doctor.selectedMedications.length > 0 && (
-                        <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
-                          <p className="font-bold text-teal-800 text-xs uppercase mb-2 flex items-center gap-1">
-                            <Pill className="w-3 h-3" />
-                            Medicamentos Prescritos pelo Médico:
-                          </p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {v.doctor.selectedMedications.map((med, i) => (
-                              <span key={i} className="text-xs bg-teal-100 border border-teal-300 text-teal-800 px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
-                                <div className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                                {med}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      <div className="text-sm bg-blue-50 p-3 rounded-lg border border-blue-100">
-                        <p className="font-bold text-blue-800 text-xs uppercase mb-1 flex items-center gap-1">
-                          <Stethoscope className="w-3 h-3" />
-                          Prescrição / Posologia:
-                        </p>
-                        <p className="text-slate-700 font-mono whitespace-pre-wrap text-sm">{v.doctor?.prescription || 'Sem prescrição registrada.'}</p>
-                      </div>
-                      {v.doctor?.diagnosis && (
-                        <div className="text-sm bg-slate-50 p-2 rounded-lg border border-slate-100">
-                          <p className="font-semibold text-slate-500 text-xs uppercase mb-0.5">Diagnóstico:</p>
-                          <p className="text-slate-700">{v.doctor.diagnosis}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleStartPharmacy(v)}
-                    className={`px-6 py-3 text-white text-sm font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 shrink-0 ${idx === 0
-                      ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-emerald-200'
-                      : 'bg-gradient-to-r from-slate-500 to-slate-600 hover:from-slate-600 hover:to-slate-700 shadow-slate-200'
-                      }`}
-                  >
-                    <Pill className="w-4 h-4" />
-                    Dispensar Medicação
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Completed */}
-        {completed.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="p-4 border-b border-slate-100 bg-slate-50">
-              <h3 className="font-bold text-slate-600 flex items-center gap-2">
-                <Check className="w-5 h-5 text-emerald-600" />
-                Atendimentos Finalizados Hoje ({completed.length})
-              </h3>
-            </div>
-            <div className="p-4 max-h-40 overflow-y-auto space-y-2">
-              {completed.map(v => (
-                <div key={v.id} className="flex justify-between items-center text-sm border-b border-slate-50 pb-2 last:border-0">
-                  <span className="font-medium text-slate-700">{v.beneficiaryName}</span>
-                  <span className="text-xs bg-emerald-50 text-emerald-600 font-bold flex items-center gap-1 px-2 py-1 rounded-full">
-                    <Check className="w-3 h-3" /> Concluído
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <PharmacyModule
+        items={items || []}
+        missions={missions || []}
+        volunteers={volunteers || []}
+        patientVisits={patientVisits || []}
+        currentUserName={user?.name || 'Farmacêutico'}
+        currentUserEmail={user?.email || ''}
+        updateItem={updateItemFirestore}
+        updatePatientVisit={updatePatientVisitFirestore}
+        showToast={showToast}
+      />
     );
   };
+
 
   const renderCalendar = () => {
     const today = new Date();
