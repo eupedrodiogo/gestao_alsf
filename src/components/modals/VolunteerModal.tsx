@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Volunteer } from '../../types/index';
-import { X, Save, User, Mail, Phone, Calendar, FileText, Briefcase, Stethoscope } from 'lucide-react';
+import { X, Save, User, Mail, Phone, Calendar, FileText, Briefcase, Stethoscope, Heart, ClipboardList } from 'lucide-react';
 
 interface VolunteerModalProps {
     isOpen: boolean;
@@ -18,6 +18,8 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({ isOpen, onClose,
     const [availability, setAvailability] = useState('');
     const [active, setActive] = useState(true);
     const [notes, setNotes] = useState('');
+    const [religion, setReligion] = useState('');
+    const [volunteerFunction, setVolunteerFunction] = useState('');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -30,6 +32,8 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({ isOpen, onClose,
             setAvailability(initialData.availability);
             setActive(initialData.active);
             setNotes(initialData.notes);
+            setReligion(initialData.religion || '');
+            setVolunteerFunction(initialData.volunteerFunction || '');
         } else {
             resetForm();
         }
@@ -44,6 +48,8 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({ isOpen, onClose,
         setAvailability('');
         setActive(true);
         setNotes('');
+        setReligion('');
+        setVolunteerFunction('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +64,9 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({ isOpen, onClose,
                 crm,
                 availability,
                 active,
-                notes
+                notes,
+                religion,
+                volunteerFunction
             });
             onClose();
             resetForm();
@@ -173,6 +181,36 @@ export const VolunteerModal: React.FC<VolunteerModalProps> = ({ isOpen, onClose,
                                 />
                             </div>
                         )}
+
+                        {/* Função na Instituição */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                <ClipboardList size={16} className="text-indigo-600" />
+                                Função na Fraternidade
+                            </label>
+                            <input
+                                type="text"
+                                value={volunteerFunction}
+                                onChange={(e) => setVolunteerFunction(e.target.value)}
+                                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                                placeholder="Ex: Triagem, Entrega de Cestas, etc"
+                            />
+                        </div>
+
+                        {/* Religião */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                                <Heart size={16} className="text-indigo-600" />
+                                Religião
+                            </label>
+                            <input
+                                type="text"
+                                value={religion}
+                                onChange={(e) => setReligion(e.target.value)}
+                                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                                placeholder="Ex: Católica, Ortodoxa, etc"
+                            />
+                        </div>
 
                         {/* Disponibilidade */}
                         <div className="space-y-2 md:col-span-2">

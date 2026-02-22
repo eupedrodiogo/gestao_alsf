@@ -91,6 +91,8 @@ export interface Volunteer {
     active: boolean;
     notes: string;
     crm?: string;
+    religion?: string;
+    volunteerFunction?: string;
 }
 
 export interface PatientVisit {
