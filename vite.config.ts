@@ -25,15 +25,15 @@ export default defineConfig(({ mode }) => {
           categories: ['medical', 'productivity', 'management'],
           icons: [
             {
-              src: 'logo fraternidade alsf.png',
+              src: 'logo alsf.webp',
               sizes: '192x192',
-              type: 'image/png',
+              type: 'image/webp',
               purpose: 'any'
             },
             {
-              src: 'logo fraternidade alsf.png',
+              src: 'logo alsf.webp',
               sizes: '512x512',
-              type: 'image/png',
+              type: 'image/webp',
               purpose: 'maskable'
             }
           ],
