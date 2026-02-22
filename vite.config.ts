@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
               src: 'logo alsf.webp',
               sizes: '512x512',
               type: 'image/webp',
-              purpose: 'maskable'
+              purpose: 'any'
             }
           ],
           screenshots: [
