@@ -9,6 +9,8 @@ import { useAuth } from './context/AuthContext';
 import { Login } from './pages/Login';
 import SetupAdmin from './pages/SetupAdmin';
 import { MissionModePanel } from './pages/MissionModePanel';
+import { PresidentDashboard } from './pages/PresidentDashboard';
+import { MissionControl } from './pages/MissionControl';
 import { isOfflineModeEnabled } from './hooks/offlineMode';
 import {
   Calendar as CalendarIcon,
@@ -99,6 +101,8 @@ import { VolunteersModule } from './modules/Volunteers/VolunteersModule';
 import { BeneficiariesModule } from './modules/Beneficiaries/BeneficiariesModule';
 import { InventoryModule } from './modules/Inventory/InventoryModule';
 import { ClinicalModule } from './modules/Clinical/ClinicalModule';
+import { CalendarModule } from './modules/Calendar/CalendarModule';
+import { InstallPrompt } from './components/ui/InstallPrompt';
 
 
 
@@ -1455,60 +1459,18 @@ const App = () => {
 
 
   const renderCalendar = () => {
-    const today = new Date();
-    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).getDay(); // 0 = Sun
-
-    const days = [];
-    for (let i = 0; i < firstDay; i++) days.push(null);
-    for (let i = 1; i <= daysInMonth; i++) days.push(i);
-
     return (
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5" />
-            <span className="hidden sm:inline">Calendário de Ações - </span>
-            {today.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-          </h2>
-          <div className="flex gap-2">
-            <button className="p-2 hover:bg-slate-100 rounded-full"><ChevronLeft className="w-5 h-5" /></button>
-            <button className="p-2 hover:bg-slate-100 rounded-full"><ChevronRight className="w-5 h-5" /></button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <div className="grid grid-cols-7 gap-px bg-slate-200 border border-slate-200 rounded-lg min-w-[600px]">
-            {['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'].map(d => (
-              <div key={d} className="bg-slate-50 p-4 text-center text-sm font-bold text-slate-500 uppercase">
-                {d}
-              </div>
-            ))}
-            {days.map((day, idx) => {
-              const currentDateStr = day ? new Date(today.getFullYear(), today.getMonth(), day).toISOString().split('T')[0] : '';
-              const dayMissions = (missions || []).filter(m => m.date === currentDateStr);
-
-              return (
-                <div key={idx} className={`bg-white min-h-[120px] p-2 hover:bg-slate-50 transition-colors ${!day ? 'bg-slate-50/50' : ''}`}>
-                  {day && (
-                    <>
-                      <span className={`text-sm font-bold ${day === today.getDate() ? 'bg-blue-600 text-white w-7 h-7 flex items-center justify-center rounded-full' : 'text-slate-700'
-                        }`}>{day}</span>
-                      <div className="mt-2 space-y-1">
-                        {dayMissions.map(m => (
-                          <div key={m.id} className="text-xs p-1.5 bg-blue-100 text-blue-800 rounded border border-blue-200 truncate cursor-pointer hover:bg-blue-200" title={m.title}>
-                            {m.title}
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <CalendarModule
+        missions={missions}
+        onMissionClick={(m) => {
+          setEditingMission(m);
+          setIsMissionModalOpen(true);
+        }}
+        onAddMission={() => {
+          setEditingMission(null);
+          setIsMissionModalOpen(true);
+        }}
+      />
     );
   };
 
@@ -1853,6 +1815,14 @@ const App = () => {
                 >
                   <Settings className="w-4 h-4 shrink-0" /> Configurações
                 </button>
+                {allowedTabs.includes('calendar') && (
+                  <button
+                    onClick={() => handleTabChange('calendar')}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm font-medium group ${activeTab === 'calendar' ? 'bg-indigo-600/10 text-indigo-400 border-l-[3px] border-indigo-400 pl-[13px]' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}
+                  >
+                    <CalendarIcon className="w-4 h-4 shrink-0 group-hover:text-indigo-400 transition-colors" /> Agenda
+                  </button>
+                )}
                 {allowedTabs.includes('users') && (
                   <button
                     onClick={() => handleTabChange('users')}
@@ -3048,57 +3018,4 @@ const App = () => {
   );
 };
 
-const container = document.getElementById('root');
-const root = createRoot(container!);
-
-// Check if setup mode is requested via URL
-const urlParams = new URLSearchParams(window.location.search);
-const isSetupMode = urlParams.get('setup') === 'admin';
-
-class ErrorBoundary extends React.Component<{ children: any }, any> {
-  state = { hasError: false, error: null };
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("Uncaught error:", error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="p-8 bg-red-50 text-red-900 font-sans min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">Algo deu errado (Tela Branca)</h1>
-          <p className="mb-4">Ocorreu um erro crítico na aplicação. Por favor, envie o erro abaixo para o suporte.</p>
-          <pre className="bg-white p-4 rounded border border-red-200 overflow-auto text-sm">
-            {this.state.error?.toString()}
-            {'\n\nStack Trace:\n'}
-            {this.state.error?.stack}
-          </pre>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-bold"
-          >
-            Recarregar Página
-          </button>
-        </div>
-      );
-    }
-
-    return (this as any).props.children;
-  }
-}
-
-root.render(
-  isSetupMode ? (
-    <ErrorBoundary><SetupAdmin /></ErrorBoundary>
-  ) : (
-    <ErrorBoundary>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </ErrorBoundary>
-  )
-);
+export default App;

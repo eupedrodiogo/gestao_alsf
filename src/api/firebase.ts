@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getOfflineModeConfig } from "./offlineMode";
+import { getOfflineModeConfig } from "../hooks/offlineMode";
 
 // Configuração do Firebase (produção)
 const firebaseConfig = {
