@@ -13,7 +13,8 @@ import {
     Activity,
     Heart,
     DollarSign,
-    Package
+    Package,
+    ClipboardList
 } from 'lucide-react';
 
 // --- Biometric Helper Functions ---
@@ -135,6 +136,8 @@ export const Login = () => {
     // New fields for Registration
     const [registrationRole, setRegistrationRole] = useState('voluntario');
     const [registryNumber, setRegistryNumber] = useState('');
+    const [religion, setReligion] = useState('');
+    const [volunteerFunction, setVolunteerFunction] = useState('');
     const [validationMsg, setValidationMsg] = useState('');
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [biometricRegistered, setBiometricRegistered] = useState(false);
@@ -181,7 +184,7 @@ export const Login = () => {
                 }
 
                 setValidationMsg('Criando conta militar/voluntária...');
-                await register(name, email, password, registrationRole, registryNumber);
+                await register(name, email, password, registrationRole, registryNumber, religion, volunteerFunction);
 
                 // Refresh message
                 setValidationMsg('');
@@ -531,6 +534,47 @@ export const Login = () => {
                                         <p className="text-[10px] text-amber-700/80 mt-2 font-medium">O sistema realizará uma validação compulsória nos conselhos regionais para autorizar o seu perfil como técnico na Missão.</p>
                                     </div>
                                 )}
+                                {/* Campo Função na Fraternidade (Para Voluntários) */}
+                                {registrationRole === 'voluntario' && (
+                                    <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                            <ClipboardList className="h-3 w-3 text-slate-400" />
+                                            Função na Fraternidade
+                                        </label>
+                                        <div className="relative">
+                                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                                <ClipboardList className="h-4 w-4 text-slate-300" />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 transition-all font-medium"
+                                                placeholder="Ex: Triagem, Entrega de Cestas, Apoio Psicológico"
+                                                value={volunteerFunction}
+                                                onChange={(e) => setVolunteerFunction(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Campo Religião */}
+                                <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+                                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                        <Heart className="h-3 w-3 text-slate-400" />
+                                        Religião
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                                            <Heart className="h-4 w-4 text-slate-300" />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 transition-all font-medium"
+                                            placeholder="Ex: Católica, Evangélica, Espírita..."
+                                            value={religion}
+                                            onChange={(e) => setReligion(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         )}
 
