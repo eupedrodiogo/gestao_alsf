@@ -14,7 +14,15 @@ import {
     Heart,
     DollarSign,
     Package,
-    ClipboardList
+    ClipboardList,
+    HeartHandshake,
+    ShoppingCart,
+    Stethoscope,
+    Smile,
+    Brain,
+    ConciergeBell,
+    Filter,
+    Boxes
 } from 'lucide-react';
 
 // --- Biometric Helper Functions ---
@@ -671,7 +679,7 @@ export const Login = () => {
                                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center mb-4">
                                     Acesso Rápido (Demo)
                                 </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -768,6 +776,133 @@ export const Login = () => {
                                             <User className="w-5 h-5 text-slate-400 group-hover:text-teal-600" />
                                         </div>
                                         <span className="text-[10px] font-bold text-slate-600 group-hover:text-teal-700">Operador</span>
+                                    </button>
+
+                                    {/* Additional Roles Added Below */}
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('voluntario@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-red-400 hover:bg-red-50 hover:shadow-md hover:shadow-red-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-red-100 flex items-center justify-center transition-colors">
+                                            <HeartHandshake className="w-5 h-5 text-slate-400 group-hover:text-red-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-red-700">Voluntário</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('pdv@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-lime-400 hover:bg-lime-50 hover:shadow-md hover:shadow-lime-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-lime-100 flex items-center justify-center transition-colors">
+                                            <ShoppingCart className="w-5 h-5 text-slate-400 group-hover:text-lime-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-lime-700">PDV</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('enfermeiro@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-cyan-400 hover:bg-cyan-50 hover:shadow-md hover:shadow-cyan-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-cyan-100 flex items-center justify-center transition-colors">
+                                            <Stethoscope className="w-5 h-5 text-slate-400 group-hover:text-cyan-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-cyan-700">Enfermeiro</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('dentista@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-purple-400 hover:bg-purple-50 hover:shadow-md hover:shadow-purple-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-purple-100 flex items-center justify-center transition-colors">
+                                            <Smile className="w-5 h-5 text-slate-400 group-hover:text-purple-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-purple-700">Dentista</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('fisioterapeuta@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-sky-400 hover:bg-sky-50 hover:shadow-md hover:shadow-sky-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-sky-100 flex items-center justify-center transition-colors">
+                                            <Activity className="w-5 h-5 text-slate-400 group-hover:text-sky-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-sky-700">Fisioterapeuta</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('psicologo@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-pink-400 hover:bg-pink-50 hover:shadow-md hover:shadow-pink-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-pink-100 flex items-center justify-center transition-colors">
+                                            <Brain className="w-5 h-5 text-slate-400 group-hover:text-pink-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-pink-700">Psicólogo</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('recepcao@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-violet-400 hover:bg-violet-50 hover:shadow-md hover:shadow-violet-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-violet-100 flex items-center justify-center transition-colors">
+                                            <ConciergeBell className="w-5 h-5 text-slate-400 group-hover:text-violet-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-violet-700">Recepção</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('triagem@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-fuchsia-400 hover:bg-fuchsia-50 hover:shadow-md hover:shadow-fuchsia-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-fuchsia-100 flex items-center justify-center transition-colors">
+                                            <Filter className="w-5 h-5 text-slate-400 group-hover:text-fuchsia-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-fuchsia-700">Triagem</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail('estoque@alsf.org');
+                                            setPassword('123456');
+                                        }}
+                                        className="py-3 px-2 rounded-xl border border-slate-200 bg-white hover:border-stone-400 hover:bg-stone-50 hover:shadow-md hover:shadow-stone-100 transition-all group flex flex-col items-center gap-2"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-slate-50 group-hover:bg-stone-100 flex items-center justify-center transition-colors">
+                                            <Boxes className="w-5 h-5 text-slate-400 group-hover:text-stone-600" />
+                                        </div>
+                                        <span className="text-[10px] font-bold text-slate-600 group-hover:text-stone-700">Estoque</span>
                                     </button>
                                 </div>
                             </div>
