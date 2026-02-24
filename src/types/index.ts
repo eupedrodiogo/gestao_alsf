@@ -139,3 +139,17 @@ export interface Transaction {
     docUrl?: string; // Receipt URL if any
     missionId?: string; // Link transaction to a specific mission
 }
+
+export interface AuditLog {
+    id: string;
+    userId: string;
+    userName: string;
+    userEmail: string;
+    action: string;
+    module: string;
+    recordId?: string;
+    previousData?: any;
+    newData?: any;
+    timestamp: any; // Firestore timestamp
+    ipAddress?: string; // If available, optional
+}

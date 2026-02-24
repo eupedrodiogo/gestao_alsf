@@ -38,11 +38,12 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
         { id: 'pos', label: 'PDV', icon: <ShieldCheck className="w-4 h-4" /> },
         { id: 'calendar', label: 'Agenda', icon: <ShieldCheck className="w-4 h-4" /> },
         { id: 'notifications', label: 'Alertas / Logs', icon: <ShieldCheck className="w-4 h-4" /> },
-        { id: 'users', label: 'Gestão de Usuários', icon: <ShieldCheck className="w-4 h-4" /> }
+        { id: 'users', label: 'Gestão de Usuários', icon: <ShieldCheck className="w-4 h-4" /> },
+        { id: 'audit', label: 'Audit Trail', icon: <ShieldCheck className="w-4 h-4" /> }
     ];
 
     const DEFAULT_ROLE_TABS: Record<string, string[]> = {
-        admin: ['dashboard', 'reception', 'triage', 'consultation', 'pharmacy', 'volunteers', 'events', 'beneficiaries', 'inventory', 'financial', 'approvals', 'fundraising', 'pos', 'calendar', 'notifications', 'users'],
+        admin: ['dashboard', 'reception', 'triage', 'consultation', 'pharmacy', 'volunteers', 'events', 'beneficiaries', 'inventory', 'financial', 'approvals', 'fundraising', 'pos', 'calendar', 'notifications', 'users', 'audit'],
         operador: ['dashboard', 'reception', 'triage', 'consultation', 'pharmacy', 'volunteers', 'events', 'beneficiaries', 'inventory', 'financial', 'approvals', 'fundraising', 'pos', 'calendar', 'notifications'],
         recepcao: ['reception'],
         triagem: ['triage'],

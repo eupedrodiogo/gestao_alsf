@@ -58,6 +58,7 @@ import {
   ShieldCheck,
   HandCoins,
   LayoutDashboard,
+  ShieldAlert,
   Megaphone,
   Briefcase,
   Activity,
@@ -104,6 +105,7 @@ import { ClinicalModule } from './modules/Clinical/ClinicalModule';
 import { CalendarModule } from './modules/Calendar/CalendarModule';
 import { InstallPrompt } from './components/ui/InstallPrompt';
 import { UserEditModal } from './components/modals/UserEditModal';
+import { AuditModule } from './modules/Admin/AuditModule';
 
 
 
@@ -134,7 +136,7 @@ const App = () => {
   }
 
   const ROLE_TABS: Record<string, string[]> = {
-    admin: ['dashboard', 'reception', 'triage', 'consultation', 'pharmacy', 'volunteers', 'events', 'beneficiaries', 'inventory', 'financial', 'approvals', 'fundraising', 'pos', 'calendar', 'notifications', 'users'],
+    admin: ['dashboard', 'reception', 'triage', 'consultation', 'pharmacy', 'volunteers', 'events', 'beneficiaries', 'inventory', 'financial', 'approvals', 'fundraising', 'pos', 'calendar', 'notifications', 'users', 'audit'],
     operador: ['dashboard', 'reception', 'triage', 'consultation', 'pharmacy', 'volunteers', 'events', 'beneficiaries', 'inventory', 'financial', 'approvals', 'fundraising', 'pos', 'calendar', 'notifications'],
     recepcao: ['reception'],
     triagem: ['triage'],
@@ -173,7 +175,7 @@ const App = () => {
 
   const defaultTab = DEFAULT_TAB[user?.role || ''] || 'dashboard';
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'reception' | 'triage' | 'consultation' | 'pharmacy' | 'volunteers' | 'events' | 'beneficiaries' | 'inventory' | 'financial' | 'approvals' | 'fundraising' | 'pos' | 'calendar' | 'notifications' | 'users'>(() => {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'reception' | 'triage' | 'consultation' | 'pharmacy' | 'volunteers' | 'events' | 'beneficiaries' | 'inventory' | 'financial' | 'approvals' | 'fundraising' | 'pos' | 'calendar' | 'notifications' | 'users' | 'audit'>(() => {
     // Read saved tab from localStorage without role validation here,
     // because user?.role is still undefined at initialization time.
     // Role validation happens in the useEffect below once auth resolves.
@@ -1834,6 +1836,14 @@ const App = () => {
                     <UserCheck className="w-4 h-4 shrink-0 group-hover:text-white transition-colors" /> Usuários
                   </button>
                 )}
+                {allowedTabs.includes('audit') && (
+                  <button
+                    onClick={() => handleTabChange('audit')}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm font-medium group ${activeTab === 'audit' ? 'bg-red-900/40 text-red-400 border-l-[3px] border-red-500 pl-[13px]' : 'text-slate-400 hover:bg-slate-800/50 hover:text-red-300'}`}
+                  >
+                    <ShieldAlert className="w-4 h-4 shrink-0 group-hover:text-red-400 transition-colors" /> Auditoria
+                  </button>
+                )}
               </div>
             </div>
           )}
@@ -2036,6 +2046,7 @@ const App = () => {
                   {activeTab === 'notifications' && 'Logs de Comunicação'}
                   {activeTab === 'volunteers' && 'Gestão de Voluntários'}
                   {activeTab === 'users' && 'Gestão de Usuários'}
+                  {activeTab === 'audit' && 'Audit Trail (Logs Sistêmicos)'}
                 </h1>
                 <p className="text-slate-500 text-xs md:text-sm mt-1 hidden sm:block">Sistema de gestão do Lar São Francisco na Providência de Deus</p>
               </div>
@@ -2092,6 +2103,7 @@ const App = () => {
         {activeTab === 'calendar' && renderCalendar()}
         {activeTab === 'notifications' && renderNotifications()}
         {activeTab === 'users' && user?.role === 'admin' && renderUsers()}
+        {activeTab === 'audit' && user?.role === 'admin' && <AuditModule />}
       </main>
 
       {/* Modo Missão Offline Panel */}
