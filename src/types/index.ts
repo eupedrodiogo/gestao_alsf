@@ -79,6 +79,7 @@ export interface UserData {
     email: string | null;
     role: UserRole;
     name?: string;
+    allowedModules?: string[];
 }
 
 export interface Volunteer {

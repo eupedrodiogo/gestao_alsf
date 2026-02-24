@@ -103,6 +103,7 @@ import { InventoryModule } from './modules/Inventory/InventoryModule';
 import { ClinicalModule } from './modules/Clinical/ClinicalModule';
 import { CalendarModule } from './modules/Calendar/CalendarModule';
 import { InstallPrompt } from './components/ui/InstallPrompt';
+import { UserEditModal } from './components/modals/UserEditModal';
 
 
 
@@ -166,7 +167,10 @@ const App = () => {
     arrecadacao: 'fundraising',
   };
 
-  const allowedTabs = ROLE_TABS[user?.role || ''] || ['dashboard'];
+  const allowedTabs = user?.allowedModules && user.allowedModules.length > 0
+    ? user.allowedModules
+    : (ROLE_TABS[user?.role || ''] || ['dashboard']);
+
   const defaultTab = DEFAULT_TAB[user?.role || ''] || 'dashboard';
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'reception' | 'triage' | 'consultation' | 'pharmacy' | 'volunteers' | 'events' | 'beneficiaries' | 'inventory' | 'financial' | 'approvals' | 'fundraising' | 'pos' | 'calendar' | 'notifications' | 'users'>(() => {
@@ -180,13 +184,15 @@ const App = () => {
   // When user role resolves, redirect to allowed tab if the saved one is not permitted
   useEffect(() => {
     if (user?.role) {
-      const currentAllowed = ROLE_TABS[user.role] || ['dashboard'];
+      const currentAllowed = user.allowedModules && user.allowedModules.length > 0
+        ? user.allowedModules
+        : (ROLE_TABS[user.role] || ['dashboard']);
       const currentDefault = DEFAULT_TAB[user.role] || 'dashboard';
       if (!currentAllowed.includes(activeTab)) {
         setActiveTab(currentDefault as any);
       }
     }
-  }, [user?.role]);
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
@@ -241,6 +247,8 @@ const App = () => {
   const [isMissionModalOpen, setIsMissionModalOpen] = useState(false);
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [isBeneficiaryModalOpen, setIsBeneficiaryModalOpen] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -1548,21 +1556,16 @@ const App = () => {
                       {u.role === 'admin' ? 'Administrador' : u.role === 'operador' ? 'Operador' : 'Voluntário'}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={u.role}
-                      onChange={(e) => updateUserRole(u.id, e.target.value)}
-                      disabled={u.id === user?.uid} // Don't let user change their own role to prevent lockout
-                      className="text-sm bg-white border border-slate-200 rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                  <td className="px-6 py-4 flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingUser(u);
+                        setIsUserModalOpen(true);
+                      }}
+                      className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-semibold text-xs flex items-center gap-1"
                     >
-                      <option value="voluntario">Voluntário</option>
-                      <option value="operador">Operador/Recepção</option>
-                      <option value="saude">Saúde (Médico/Triagem)</option>
-                      <option value="financeiro">Financeiro</option>
-                      <option value="arrecadacao">Arrecadação</option>
-                      <option value="pdv">PDV</option>
-                      <option value="admin">Administrador</option>
-                    </select>
+                      <Edit className="w-4 h-4" /> Editar Permissões
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -2193,6 +2196,23 @@ const App = () => {
 
       {/* Modals */}
 
+      <UserEditModal
+        isOpen={isUserModalOpen}
+        onClose={() => {
+          setIsUserModalOpen(false);
+          setEditingUser(null);
+        }}
+        userToEdit={editingUser}
+        onSave={async (id, updates) => {
+          try {
+            await updateDoc(doc(db, 'users', id), updates);
+            setAppUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
+            showToast('Permissões de usuário atualizadas com sucesso', 'success');
+          } catch (e: any) {
+            showToast(e.message, 'error');
+          }
+        }}
+      />
 
       {
         isMissionModalOpen && (

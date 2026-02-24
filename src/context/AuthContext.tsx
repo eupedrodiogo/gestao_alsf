@@ -30,23 +30,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
                 let role: UserRole = 'voluntario';
                 let name = firebaseUser.displayName || '';
+                let allowedModules: string[] | undefined = undefined;
 
                 if (userSnap.exists()) {
                     const data = userSnap.data();
                     role = data.role as UserRole;
                     name = data.name || name;
+                    allowedModules = data.allowedModules;
                 } else {
-                    // First time login? Create default doc or just assume volunteer
-                    // specific rule: if email is from specific domain or list, make admin?
-                    // For now, let's just make the first ever user an admin manually or via console.
-                    // Or default everybody to 'voluntario'
+                    // First time login
                 }
 
                 setUser({
                     uid: firebaseUser.uid,
                     email: firebaseUser.email,
                     role,
-                    name
+                    name,
+                    allowedModules
                 });
             } else {
                 setUser(null);
